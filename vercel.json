@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/SG_ToDo_List_Operativa.bilingual.html" },
+    { "source": "/memory", "destination": "/api/memory" }
+  ]
+}
