@@ -1,8 +1,8 @@
 const MEMORY_KEY = "global";
-const SOURCE_NAME = "SG_ToDo_List_Operativa.bilingual.html";
+const SOURCE_NAME = "ToDo.html";
 
 const DEFAULT_MEMORY = {
-  version: 1,
+  version: 3,
   source: SOURCE_NAME,
   updatedAt: null,
   checked: {},
@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
     if (req.method === "POST") {
       const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
       const normalized = {
-        version: 1,
+        version: 3,
         source: SOURCE_NAME,
         updatedAt: body.updatedAt || new Date().toISOString(),
         checked: body && typeof body.checked === "object" && body.checked ? body.checked : {},

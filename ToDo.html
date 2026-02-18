@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Studio Galilei - Growth System (Airtable CRM/PMS) Build ToDo</title>
+  <style>
+    :root {
+      --bg0: #f7f1e7;
+      --bg1: #efe2cf;
+      --card: #fffdf8;
+      --fg: #1b2330;
+      --muted: #5f6675;
+      --border: rgba(20, 25, 35, 0.14);
+      --shadow: rgba(0, 0, 0, 0.10);
+      --accent: #0f5f5c;
+      --accent2: #b85c38;
+      --ok: #1f7a4f;
+      --warn: #a56200;
+      --bad: #b42318;
+      --tag: rgba(15, 95, 92, 0.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      color: var(--fg);
+      min-height: 100vh;
+      background:
+        radial-gradient(1100px 700px at 90% -10%, #efe4cc 0%, transparent 70%),
+        radial-gradient(900px 500px at 5% 120%, #ead8c0 0%, transparent 70%),
+        linear-gradient(140deg, var(--bg0), var(--bg1));
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 22px auto;
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--shadow);
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    h1 { font-size: 20px; letter-spacing: 0.2px; }
+    .subtitle { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.65);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pill strong { color: var(--accent); font-weight: 700; }
+
+    .topbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(252, 248, 239, 0.85);
+      margin: 14px 0;
+    }
+
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-left: auto; }
+    .nav a {
+      text-decoration: none;
+      color: #143b5f;
+      background: #e6edf5;
+      border: 1px solid #c8d7e8;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      display: inline-block;
+      transition: background .15s;
+    }
+    .nav a:hover { background: #d2e0f0; }
+
+    button, select, input[type="search"] {
+      border: 1px solid rgba(20, 25, 35, 0.20);
+      border-radius: 10px;
+      padding: 7px 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    button { cursor: pointer; }
+    button:hover { background: #f2efe7; }
+    button.primary {
+      background: var(--accent);
+      border-color: #0a4b49;
+      color: #fff;
+    }
+    button.primary:hover { background: #0d4e4c; }
+    button.danger {
+      color: var(--bad);
+      border-color: rgba(180, 35, 24, 0.35);
+    }
+
+    input[type="search"] { width: min(360px, 70vw); }
+
+    #status { font-size: 11px; color: var(--muted); }
+
+    details.block {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 253, 247, 0.75);
+      margin: 14px 0;
+      overflow: hidden;
+    }
+
+    details.block > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 14px;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(90deg, rgba(240, 230, 210, 0.85), rgba(249, 245, 236, 0.85));
+      border-bottom: 1px solid var(--border);
+      font-weight: 800;
+      font-size: 14px;
+    }
+    details.block > summary::-webkit-details-marker { display: none; }
+    details.block > summary::before {
+      content: ">";
+      font-size: 12px;
+      margin-right: 8px;
+      transform: rotate(0deg);
+      transition: transform .18s;
+    }
+    details.block[open] > summary::before { transform: rotate(90deg); }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #123;
+      background: #e2edf2;
+      border: 1px solid #b9ccd6;
+      border-radius: 999px;
+      padding: 2px 8px;
+      white-space: nowrap;
+    }
+
+    .block-body { padding: 12px 14px; }
+    .block-body p { font-size: 13px; line-height: 1.55; color: var(--fg); margin-bottom: 10px; }
+    .block-body ul { padding-left: 18px; margin: 10px 0 0; }
+    .block-body li { margin: 6px 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+
+    .group-title {
+      font-weight: 800;
+      font-size: 13px;
+      color: #2c3e50;
+      margin: 12px 0 6px;
+      padding: 6px 0 4px;
+      border-bottom: 1px solid rgba(20, 25, 35, 0.10);
+    }
+    .group-title:first-child { margin-top: 0; }
+
+    .task {
+      display: grid;
+      grid-template-columns: 20px 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 7px 0;
+      border-bottom: 1px dashed rgba(0,0,0,.07);
+    }
+    .task:last-child { border-bottom: none; }
+
+    .task input[type="checkbox"] {
+      margin-top: 3px;
+      width: 15px;
+      height: 15px;
+      accent-color: var(--ok);
+      cursor: pointer;
+    }
+
+    .task .text { font-size: 13px; line-height: 1.5; }
+    .task.done .text { text-decoration: line-through; opacity: 0.55; }
+
+    .meta { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+    .tag {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 95, 92, 0.20);
+      background: var(--tag);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .tag.fix { border-color: rgba(180, 35, 24, 0.22); background: rgba(180, 35, 24, 0.08); color: var(--bad); }
+    .tag.verify { border-color: rgba(165, 98, 0, 0.26); background: rgba(165, 98, 0, 0.10); color: var(--warn); }
+    .tag.decision { border-color: rgba(184, 92, 56, 0.26); background: rgba(184, 92, 56, 0.10); color: var(--accent2); }
+
+    .task-note, .task-code {
+      grid-column: 2 / -1;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      padding-left: 2px;
+      margin-top: 2px;
+    }
+
+    code {
+      background: rgba(232, 224, 206, 0.85);
+      padding: 1px 5px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .task-code code {
+      display: inline-block;
+      max-width: 100%;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(20, 25, 35, 0.10);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 760px) {
+      .wrap { margin: 10px; padding: 14px; }
+      header { gap: 6px; }
+      .topbar { flex-direction: column; align-items: stretch; }
+      .controls { margin-left: 0; justify-content: flex-start; }
+      input[type="search"] { width: 100%; }
+      .task { grid-template-columns: 20px 1fr; }
+      .meta { grid-column: 2 / -1; justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div>
+      <h1>Studio Galilei - Growth System (Airtable CRM/PMS) Build ToDo</h1>
+      <p class="subtitle">
+        Single source of truth: <code>CRM SG Architecture Technical Documentation</code> + <code>SG_ToDo_List_Operativa</code>.
+        Checklist language: English.
+      </p>
+    </div>
+    <div class="pill" title="This page does not write to Airtable. It only tracks checklist state.">
+      <strong>Scope:</strong> Airtable build (schema, automations, interfaces, integrations)
+    </div>
+  </header>
+
+  <details class="block" open>
+    <summary>
+      <span>How This System Works (in 90 seconds)</span>
+      <span class="badge">Architecture</span>
+    </summary>
+    <div class="block-body">
+      <p>
+        This CRM/PMS separates <strong>Decision Governance</strong> (Clients module) from <strong>Execution</strong> (Projects + Activities).
+        A Prospect becomes a Customer only after a dual hard-gate: contract signature (Proposal) + first payment (Deal).
+      </p>
+      <p>
+        The governance discipline is enforced through 3 gates:
+        Gate 1 (72h) analysis SLA, Gate 2 (48h pre-call) proposal-sent check, Gate 3 (14d) decision latency dismissal.
+      </p>
+      <p>
+        Pre-existing infrastructure (do not replicate): Follow-up system is already operational and linked between Contacts and Customers.
+      </p>
+    </div>
+  </details>
+
+  <details class="block" open>
+    <summary>
+      <span>Current Airtable Base Snapshot (read-only)</span>
+      <span class="badge">2026-02-18</span>
+    </summary>
+    <div class="block-body">
+      <p>
+        Snapshot is based on Airtable Metadata API (tables/fields/views only). Automations, interfaces, and Make.com scenarios
+        cannot be reliably detected via the API and are listed as <span class="tag verify">VERIFY</span> tasks below.
+      </p>
+      <div class="group-title">Detected tables</div>
+      <ul>
+        <li>Contacts, Clients, Proposals, Deals, Projects, Activities, Staging Area</li>
+      </ul>
+      <div class="group-title">Gaps / mismatches detected</div>
+      <ul>
+        <li><code>Contacts.Deals</code> exists as a text field, but must be a Link to <code>Deals</code>.</li>
+        <li><code>Deals.Next Deadlline</code> is misspelled (should be <code>Next Deadline</code>).</li>
+        <li><code>Deals.Deal Name</code> formula currently concatenates Client + Project; should use Client + Deal Type.</li>
+        <li>Missing: <code>Deals.Bad Debt Flag</code> formula.</li>
+        <li>Missing: <code>Clients</code> governance dates + Gate timer formulas.</li>
+        <li>Missing: <code>Activities.Deadline Check</code> formula and a Duration field for consulting-hours monitoring.</li>
+        <li>Missing: Staging view filtered to <code>Processing Status = New</code> (required for the ingestion automation trigger).</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="topbar">
+    <div class="nav">
+      <a href="#phase-1">Phase 1 - Internal Logic</a>
+      <a href="#phase-2">Phase 2 - Interfaces</a>
+      <a href="#phase-3">Phase 3 - Connectivity</a>
+    </div>
+    <div class="controls">
+      <button id="expand-all">Expand all</button>
+      <button id="collapse-all">Collapse all</button>
+      <select id="filter">
+        <option value="remaining">Show: Remaining (default)</option>
+        <option value="all">Show: All</option>
+        <option value="done">Show: Done only</option>
+        <option value="tag:fix">Show: FIX only</option>
+        <option value="tag:verify">Show: VERIFY only</option>
+        <option value="tag:decision">Show: DECISION only</option>
+      </select>
+      <input id="search" type="search" placeholder="Search tasks (e.g. Gate 1, Bad Debt, Calendly)" />
+      <button id="export-btn" class="primary">Export memory</button>
+      <button id="import-btn">Import memory</button>
+      <input id="import-input" type="file" accept="application/json" style="display:none" />
+      <button id="reset-btn" class="danger">Reset all</button>
+      <span id="status">memory: local</span>
+    </div>
+  </div>
+
+  <div id="phases"></div>
+
+  <div class="footer">
+    Memory rules:
+    uses <code>localStorage</code> and attempts to autosave to <code>/memory</code> when deployed with Supabase.
+    This checklist does not read or write your Airtable base.
+  </div>
+</main>
+
+<script>
+(function () {
+  const STORAGE_KEY = 'sg_growth_system_todo_v3';
+  const MEMORY_FILE = 'SG_GrowthSystem_ToDo.memory.json';
+  const statusEl = document.getElementById('status');
+  const phasesRoot = document.getElementById('phases');
+  const filterEl = document.getElementById('filter');
+  const searchEl = document.getElementById('search');
+
+  let serverMode = false;
+  let saveTimer = null;
+  let memory = { version: 3, updatedAt: null, checked: {} };
+
+  const PHASES = [
+    {
+      id: 'phase-1',
+      title: 'PHASE 1 - Internal Logic (Inside Airtable)',
+      sections: [
+        {
+          id: 's1-1',
+          title: '1.1 - Schema, Fields, and Links (fix + complete)',
+          dependency: 'Start here. Automations depend on correct fields and links.',
+          groups: [
+            {
+              title: 'Contacts',
+              tasks: [
+                {
+                  id: 'p1_contacts_fix_deals_link',
+                  text: "Fix field 'Deals' in Contacts -> make it a Link to the Deals table (migrate any existing values).",
+                  tags: ['FIX'],
+                  note: 'Detected: Contacts.Deals is currently a text field, so rollups/lookups and automations cannot work reliably.'
+                },
+                {
+                  id: 'p1_contacts_add_calendly_event_id',
+                  text: "Add field 'Calendly Event ID' in Contacts (Single line text).",
+                  tags: [],
+                  note: 'Used by Make.com scenarios to track and reconcile booking updates.'
+                }
+              ]
+            },
+            {
+              title: 'Clients (Governance)',
+              tasks: [
+                {
+                  id: 'p1_clients_add_qualification_date',
+                  text: "Add field 'Qualification Date' in Clients (Date).",
+                  tags: [],
+                  note: 'Starts Gate 1 timer.'
+                },
+                {
+                  id: 'p1_clients_add_proposal_discussion_date',
+                  text: "Add field 'Proposal Discussion Date' in Clients (Date).",
+                  tags: [],
+                  note: 'Used by Gate 2 (48h pre-call proposal-sent check).'
+                },
+                {
+                  id: 'p1_clients_add_second_call_done_date',
+                  text: "Add field 'Second Call Done Date' in Clients (Date).",
+                  tags: [],
+                  note: 'Starts Gate 3 (14-day decision-latency timer).'
+                },
+                {
+                  id: 'p1_clients_normalize_qualified_customer_status',
+                  text: "Normalize 'Qualified Customer Status' in Clients (field name + choice labels) so formulas and automations are consistent.",
+                  tags: ['DECISION', 'FIX'],
+                  note: "Recommended canonical choices (keep extras if needed): Client Mapped, Proposal sent, Waiting for sign/payment, Customer.",
+                }
+              ]
+            },
+            {
+              title: 'Deals',
+              tasks: [
+                {
+                  id: 'p1_deals_fix_next_deadline_spelling',
+                  text: "Rename 'Next Deadlline' -> 'Next Deadline' in Deals.",
+                  tags: ['FIX']
+                },
+                {
+                  id: 'p1_deals_add_deal_type_lookup',
+                  text: "Expose 'Deal Type' in Deals (Lookup from linked Proposal) so Deals can be named consistently.",
+                  tags: ['DECISION'],
+                  note: "Current base: Deal Type exists on Proposals. Recommended: create a Lookup on Deals -> Proposals -> Deal Type."
+                },
+                {
+                  id: 'p1_deals_fix_deal_name_formula',
+                  text: "Fix Deals.'Deal Name' formula to use Client + Deal Type (not Client + Project).",
+                  tags: ['FIX']
+                }
+              ]
+            },
+            {
+              title: 'Activities (Tasks + Events)',
+              tasks: [
+                {
+                  id: 'p1_activities_enable_time_on_deadline',
+                  text: "Enable time on Activities.'Deadline' (or add a dedicated DateTime field for scheduled calls).",
+                  tags: ['DECISION'],
+                  note: "Required for bidirectional Google Calendar sync of call-type activities."
+                },
+                {
+                  id: 'p1_activities_add_duration_hours',
+                  text: "Add field 'Duration (hours)' in Activities (Number).",
+                  tags: [],
+                  note: "Required to monitor the 6-hour consulting limit via rollups."
+                }
+              ]
+            },
+            {
+              title: 'Staging Area (Ingestion Firewall)',
+              tasks: [
+                {
+                  id: 'p1_staging_add_company_name_optional',
+                  text: "Optional but recommended: add field 'Company Name' in Staging Area (Single line text) for automated Client mapping.",
+                  tags: ['DECISION'],
+                  note: "Without a company identifier, the 'Call Done -> Client creation' automation needs a manual mapping step."
+                },
+                {
+                  id: 'p1_staging_create_new_view',
+                  text: "Create view 'New' in Staging Area filtered to Processing Status = New (used by ingestion automation trigger).",
+                  tags: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 's1-2',
+          title: '1.2 - Calculated Fields and Power-Fields',
+          dependency: 'Requires links from 1.1.',
+          groups: [
+            {
+              title: 'Clients - Gate timers',
+              tasks: [
+                {
+                  id: 'p1_clients_gate1_timer',
+                  text: "Create formula 'Gate 1 Timer (72h)' in Clients.",
+                  tags: [],
+                  code: "IF(AND({Qualified Customer Status}='Client Mapped', DATETIME_DIFF(NOW(), {Qualification Date}, 'hours') > 72), 'SLA VIOLATED', 'OK')"
+                },
+                {
+                  id: 'p1_clients_gate3_timer',
+                  text: "Create formula 'Gate 3 Timer (14d)' in Clients.",
+                  tags: [],
+                  code: "IF(AND({Qualified Customer Status}='Waiting for sign/payment', DATETIME_DIFF(NOW(), {Second Call Done Date}, 'days') > 14), 'EXPIRED', 'OK')"
+                }
+              ]
+            },
+            {
+              title: 'Deals - Financial governance',
+              tasks: [
+                {
+                  id: 'p1_deals_bad_debt_flag',
+                  text: "Create formula 'Bad Debt Flag' in Deals.",
+                  tags: [],
+                  code: "IF(AND({Balance Due} > 0, {Next Deadline} < TODAY()), 'Bad Debt', 'OK')",
+                  note: "Bad debt must cascade to block activation/progress of operations until resolved."
+                },
+                {
+                  id: 'p1_deals_total_value_decision',
+                  text: "Decide how to store Deals.'Total Value' (lookup vs currency snapshot) and make sure Balance Due stays numeric.",
+                  tags: ['DECISION'],
+                  note: "Current base uses a Lookup from Proposals.Amount. If you keep it, validate that formulas behave correctly for single-linked Proposals."
+                }
+              ]
+            },
+            {
+              title: 'Activities - SLA logic and consulting hours support',
+              tasks: [
+                {
+                  id: 'p1_activities_deadline_check_formula',
+                  text: "Create formula 'Deadline Check' in Activities.",
+                  tags: [],
+                  code: "IF(AND({Deadline} < TODAY(), {Status} != 'Done'), 'Deadline ended', 'On Track')"
+                },
+                {
+                  id: 'p1_activities_call_duration_formula',
+                  text: "Create formula 'Call Duration (hours)' in Activities for filtered rollups (call types only).",
+                  tags: [],
+                  note: "Example: IF(Activity Type is a call/event type, use Duration (hours), else 0."
+                },
+                {
+                  id: 'p1_rollup_total_consulting_hours',
+                  text: "Create rollup 'Total Consulting Hours' on Deals (or Projects): SUM of Activities.'Call Duration (hours)'.",
+                  tags: [],
+                  note: "Supports 75% (4.5h) and 100% (6h) alerts."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 's1-3',
+          title: '1.3 - Native Airtable Automations (Airtable-to-Airtable)',
+          dependency: 'Requires 1.1 + 1.2 complete.',
+          groups: [
+            {
+              title: 'Automation - Ingestion: Staging -> Contacts (Normalization + Dedup)',
+              tasks: [
+                { id: 'p1_auto_ingest_create', text: "VERIFY then create automation 'Ingestion: Staging -> Contacts'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_ingest_trigger', text: "Trigger: When record enters view (Staging Area view 'New').", tags: [] },
+                { id: 'p1_auto_ingest_script_dedupe', text: "Script: Deduplicate by Email (search in Contacts).", tags: [] },
+                { id: 'p1_auto_ingest_script_upsert', text: "Script: If Email exists -> Upsert (update Source; append Notes with 'Reingested from [Source]').", tags: [] },
+                { id: 'p1_auto_ingest_script_insert', text: "Script: If Email does not exist -> Insert new Contact.", tags: [] },
+                { id: 'p1_auto_ingest_script_cleaning', text: "Script: Data cleaning (Proper Case on Name; trim whitespace on text fields).", tags: [] },
+                { id: 'p1_auto_ingest_mapping_outbound', text: "Script: If Source = Outbound -> Action Status = 'To be contacted'.", tags: [] },
+                { id: 'p1_auto_ingest_mapping_inbound', text: "Script: If Source = Website/Inbound or Paid Traffic -> Calendly Status = 'Not booked'.", tags: [] },
+                { id: 'p1_auto_ingest_finalize', text: "Action: Update Staging Area.Processing Status -> Processed (or Error/Duplicate as appropriate).", tags: [] }
+              ]
+            },
+            {
+              title: 'Automation - Lead Qualification on Call Done',
+              tasks: [
+                { id: 'p1_auto_qual_create', text: "VERIFY then create automation 'Lead Qualification on Call Done'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_qual_trigger', text: "Trigger: Contacts.Pipeline Status = Lead AND Contacts.Calendly Status = Call Done.", tags: [] },
+                { id: 'p1_auto_qual_update_contact', text: "Action: Update Contact.Pipeline Status -> Qualified.", tags: [] },
+                { id: 'p1_auto_qual_find_or_create_client', text: "Script/Actions: Find existing Client (by Company Name). If missing, create it with Qualified Customer Status = Client Mapped.", tags: ['DECISION'], note: "Decide what field provides the company name (Staging Area Company Name, email domain parsing, or manual mapping)."},
+                { id: 'p1_auto_qual_set_qualification_date', text: "Action: Set Clients.Qualification Date = NOW().", tags: [] },
+                { id: 'p1_auto_qual_link_contact', text: "Action: Link Contact -> Client.", tags: [] }
+              ]
+            },
+            {
+              title: 'Automation - Gate 1: Create Analysis Task',
+              tasks: [
+                { id: 'p1_auto_gate1_create', text: "VERIFY then create automation 'Gate 1: Create Analysis Task'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_gate1_trigger', text: "Trigger: Clients.Qualified Customer Status = Client Mapped.", tags: [] },
+                { id: 'p1_auto_gate1_action', text: "Action: Create Activity 'Analysis Production - {Company Name}' (Type: Analysis Production; Status: To Do).", tags: [] },
+                { id: 'p1_auto_gate1_deadline', text: "Set Deadline = Qualification Date + 60 hours (leave margin before 72h SLA).", tags: [] }
+              ]
+            },
+            {
+              title: 'Automation - No-Show Recovery (reset contact)',
+              tasks: [
+                { id: 'p1_auto_noshow_create', text: "VERIFY then create automation 'No-Show Recovery'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_noshow_trigger', text: "Trigger: Contacts.Calendly Status = No-Show.", tags: [] },
+                { id: 'p1_auto_noshow_action', text: "Action: Update Contacts.Action Status -> To be contacted.", tags: [] }
+              ]
+            },
+            {
+              title: 'Automation - Proposal Signed -> Deal creation',
+              tasks: [
+                { id: 'p1_auto_proposal_to_deal_create', text: "VERIFY then create automation 'Proposal Signed -> Deal Creation'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_proposal_to_deal_trigger', text: "Trigger: Proposals.Status = Signed (or Accepted if you rename).", tags: ['DECISION'] },
+                { id: 'p1_auto_proposal_to_deal_action_create_deal', text: "Action: Create Deal; set Total Value from Proposal.Amount (or rely on lookup if kept).", tags: ['DECISION'] },
+                { id: 'p1_auto_proposal_to_deal_link', text: "Action: Link Deal to Proposal and Client.", tags: [] },
+                { id: 'p1_auto_proposal_to_deal_update_client', text: "Action: Update Clients.Qualified Customer Status -> Waiting for sign/payment.", tags: [] }
+              ]
+            },
+            {
+              title: 'Automation - Gate 2 and Gate 3 state transitions (required for timers)',
+              tasks: [
+                { id: 'p1_auto_proposal_sent_update', text: "Create automation: when Proposal.Status becomes Sent -> Clients.Qualified Customer Status = Proposal sent (and set Proposals.Date Sent).", tags: ['VERIFY'] },
+                { id: 'p1_auto_second_call_done_update', text: "Create automation: when Second Call is completed -> set Clients.Second Call Done Date and move to Waiting for sign/payment; sync Contacts.Pipeline Status -> Waiting for sign.", tags: ['VERIFY'], note: "Implementation choice: drive from an Activity of type Demo/Presentation marked Done, or from Calendly outcome + mapped event." }
+              ]
+            },
+            {
+              title: 'Automation - Pilot Activation (dual hard-gate: signature + payment)',
+              tasks: [
+                { id: 'p1_auto_pilot_activation_create', text: "VERIFY then create automation 'Pilot Activation: Dual Hard-Gate'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_pilot_activation_trigger', text: "Trigger: Deals.Amount Collected > 0.", tags: [] },
+                { id: 'p1_auto_pilot_activation_condition', text: "Condition: linked Proposal.Status = Signed and Proposals.Date Signed is set.", tags: [] },
+                { id: 'p1_auto_pilot_activation_client_promote', text: "Action: Clients.Qualified Customer Status -> Customer.", tags: [] },
+                { id: 'p1_auto_pilot_activation_contact_sync', text: "Action: all linked Contacts.Pipeline Status -> Pilot.", tags: [] },
+                { id: 'p1_auto_pilot_activation_project_create', text: "Action: Create Project linked to Deal (Project Status = Confrontation).", tags: [] },
+                { id: 'p1_auto_pilot_activation_project_start', text: "Action: set Project start date from Proposal.Date Signed (or equivalent).", tags: ['DECISION'] }
+              ]
+            },
+            {
+              title: 'Automation - Generate Standard Pilot Activities (60 days)',
+              tasks: [
+                { id: 'p1_auto_pilot_tasks_create', text: "VERIFY then create automation 'Pilot: Generate Standard Activities'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_pilot_tasks_trigger', text: "Trigger: Project created (filter: Project Status = Confrontation).", tags: [] },
+                { id: 'p1_auto_pilot_tasks_actions', text: "Actions: create Confrontation, Business Case Draft, Architecture Review, System Presentation, Execution, and Report Delivery (x4) activities with relative deadlines.", tags: [] },
+                { id: 'p1_auto_pilot_tasks_link', text: "Ensure all created Activities are linked to the Project.", tags: [] }
+              ]
+            },
+            {
+              title: "Automation - Activities: auto 'Deadline ended'",
+              tasks: [
+                { id: 'p1_auto_deadlineended_create', text: "VERIFY then create automation 'Activity: Auto Deadline Ended'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_deadlineended_trigger', text: "Trigger: Activities.Deadline Check = 'Deadline ended' AND Activities.Status != Done.", tags: [] },
+                { id: 'p1_auto_deadlineended_action', text: "Action: set Activities.Status -> Deadline ended.", tags: [] }
+              ]
+            },
+            {
+              title: 'Automation - Gate 3: scheduled dismissal (14-day timeout)',
+              tasks: [
+                { id: 'p1_auto_gate3_create', text: "VERIFY then create automation 'Gate 3: 14-Day Timeout Dismissal'.", tags: ['VERIFY'] },
+                { id: 'p1_auto_gate3_trigger', text: "Trigger: scheduled daily; find Clients with Gate 3 Timer = EXPIRED.", tags: [] },
+                { id: 'p1_auto_gate3_condition', text: "Condition: Proposal status still Draft/Sent/Viewed (not Signed/Accepted).", tags: [] },
+                { id: 'p1_auto_gate3_actions', text: "Actions: Clients.Pipeline Status -> Ex-Client; set Exit Reason = Lack of decisions; update linked Contacts.Pipeline Status -> Ex-Client.", tags: [] }
+              ]
+            },
+            {
+              title: 'Automation - Bad debt operational block',
+              tasks: [
+                { id: 'p1_auto_bad_debt_block_design', text: "Design and implement how Bad Debt blocks operations (Projects/Activities).", tags: ['DECISION', 'VERIFY'], note: "Minimum: freeze Project + alert leadership; also prevent new Activities from being generated while Bad Debt Flag = Bad Debt." }
+              ]
+            }
+          ]
+        },
+        {
+          id: 's1-4',
+          title: '1.4 - Logical Validation and Gate Testing',
+          dependency: 'Run after 1.3 is active.',
+          groups: [
+            {
+              title: 'Gate 1 - Analysis (72h)',
+              tasks: [
+                { id: 'p1_test_gate1_setup', text: "Create a test Contact (Pipeline Status = Lead; Calendly Status = Call Done).", tags: [] },
+                { id: 'p1_test_gate1_client_created', text: "Verify a Client is created/mapped with Qualified Customer Status = Client Mapped.", tags: [] },
+                { id: 'p1_test_gate1_analysis_task', text: "Verify Activity 'Analysis Production' is created with Deadline = +60 hours.", tags: [] },
+                { id: 'p1_test_gate1_sla_violation', text: "Simulate 72h passing (set Qualification Date 4 days ago) and verify Gate 1 Timer = SLA VIOLATED.", tags: [] }
+              ]
+            },
+            {
+              title: 'Gate 2 - Pre-call proposal alert (48h)',
+              tasks: [
+                { id: 'p1_test_gate2_check', text: "Verify the 48h pre-call check alerts if Qualified Customer Status != Proposal sent.", tags: [] }
+              ]
+            },
+            {
+              title: 'Gate 3 - Latency rule (14 days)',
+              tasks: [
+                { id: 'p1_test_gate3_setup', text: "Create a test Client with Qualified Customer Status = Waiting for sign/payment and Second Call Done Date = 15 days ago.", tags: [] },
+                { id: 'p1_test_gate3_run', text: "Run the scheduled dismissal automation and verify Client moves to Ex-Client with Exit Reason = Lack of decisions.", tags: [] },
+                { id: 'p1_test_gate3_contacts_sync', text: "Verify linked Contacts move to Pipeline Status = Ex-Client.", tags: [] }
+              ]
+            },
+            {
+              title: 'Dual hard-gate - Pilot activation',
+              tasks: [
+                { id: 'p1_test_dual_gate_setup_proposal', text: "Create a test Proposal (Status = Signed; Date Signed set).", tags: [] },
+                { id: 'p1_test_dual_gate_payment', text: "Create/update a linked Deal with Amount Collected > 0 (e.g., 1800).", tags: [] },
+                { id: 'p1_test_dual_gate_project', text: "Verify Project is created with Project Status = Confrontation.", tags: [] },
+                { id: 'p1_test_dual_gate_activities', text: "Verify standard Pilot Activities are generated (including 4 Report Delivery tasks).", tags: [] },
+                { id: 'p1_test_dual_gate_contact_sync', text: "Verify all linked Contacts move to Pipeline Status = Pilot.", tags: [] }
+              ]
+            },
+            {
+              title: 'Bad debt + deadline ended',
+              tasks: [
+                { id: 'p1_test_bad_debt_flag', text: "Set a Deal with Balance Due > 0 and Next Deadline in the past; verify Bad Debt Flag = Bad Debt.", tags: [] },
+                { id: 'p1_test_bad_debt_block', text: "Verify operational block works (no new Activities should be activated/generated while Bad Debt).", tags: [] },
+                { id: 'p1_test_deadline_ended', text: "Create an Activity with Deadline in the past and Status = To Do; verify automation sets Status = Deadline ended.", tags: [] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'phase-2',
+      title: 'PHASE 2 - Team UX and Interfaces (Airtable Interfaces)',
+      sections: [
+        {
+          id: 's2-1',
+          title: '2.1 - Commercial Dashboard (Lorenzo / Giacomo)',
+          dependency: 'Requires Contacts/Clients/Proposals + Gate timer fields.',
+          groups: [
+            {
+              title: 'Pipeline (Contacts)',
+              tasks: [
+                { id: 'p2_sales_create_interface', text: "VERIFY then create Interface 'Commercial Dashboard' in Airtable Interfaces.", tags: ['VERIFY'] },
+                { id: 'p2_sales_kanban_contacts', text: "Add Kanban for Contacts grouped by Pipeline Status (Lead -> Qualified -> Waiting for sign -> Pilot).", tags: [] },
+                { id: 'p2_sales_filters_contacts', text: "Filter: hide Contacts with Pipeline Status = Ex-Client and Retainer.", tags: [] },
+                { id: 'p2_sales_cards_contacts', text: "Card fields: Name, Company, Source, Action Status, Calendly Status.", tags: [] },
+                { id: 'p2_sales_colors_contacts', text: "Kanban column colors: Lead=Blue, Qualified=Yellow, Waiting for sign=Orange, Pilot=Green.", tags: [] }
+              ]
+            },
+            {
+              title: 'Client governance (Angel/Demon)',
+              tasks: [
+                { id: 'p2_sales_clients_view', text: "Add a Clients grid/gallery block in the same interface.", tags: [] },
+                { id: 'p2_sales_clients_sort', text: "Sort by Control Label: Demon -> Borderline -> To be monitored -> Angel.", tags: [] },
+                { id: 'p2_sales_clients_coloring', text: "Conditional coloring: Angel=Green, Demon=Red, Borderline=Orange, To be monitored=Yellow.", tags: [] },
+                { id: 'p2_sales_clients_fields', text: "Fields: Company Name, LTV, Behavioral Flags, Control Label, Pipeline Status, Gate 1 Timer, Gate 3 Timer.", tags: [] }
+              ]
+            },
+            {
+              title: 'Proposal tracker',
+              tasks: [
+                { id: 'p2_sales_proposals_block', text: "Add a Proposals block in the same interface.", tags: [] },
+                { id: 'p2_sales_proposals_kanban', text: "Kanban grouped by Status (Draft -> Sent -> Viewed -> Signed/Rejected).", tags: [] },
+                { id: 'p2_sales_proposals_fields', text: "Card fields: Proposal ID, Amount, Deal Type, Date Sent, Date Signed.", tags: [] },
+                { id: 'p2_sales_proposals_filter', text: "Filter out Status = Expired.", tags: [] }
+              ]
+            },
+            {
+              title: 'Widgets and KPIs',
+              tasks: [
+                { id: 'p2_sales_widget_funnel', text: "Add chart: count of Contacts by Pipeline Status (funnel).", tags: [] },
+                { id: 'p2_sales_widget_ltv', text: "Add number: total LTV (sum of active Clients).", tags: [] },
+                { id: 'p2_sales_widget_active_proposals', text: "Add number: count of Proposals with Status in (Sent, Viewed).", tags: [] },
+                { id: 'p2_sales_widget_gate1', text: "Add widget: Clients where Gate 1 Timer = SLA VIOLATED.", tags: [] }
+              ]
+            }
+          ]
+        },
+        {
+          id: 's2-2',
+          title: '2.2 - Project Management Interface (Operations Team)',
+          dependency: 'Requires Projects + Activities + Pilot activity generation.',
+          groups: [
+            {
+              title: 'Project timeline',
+              tasks: [
+                { id: 'p2_ops_create_interface', text: "VERIFY then create Interface 'Project Management' in Airtable Interfaces.", tags: ['VERIFY'] },
+                { id: 'p2_ops_timeline', text: "Add Activities timeline view using Starting Date / Ending Date.", tags: [] },
+                { id: 'p2_ops_grouping', text: "Group by Project Name.", tags: [] },
+                { id: 'p2_ops_colors', text: "Colors by Activity Type: Confrontation=Blue, Business Case=Green, Execution=Orange, Report=Purple.", tags: [] },
+                { id: 'p2_ops_filter_active', text: "Filter: show only Projects with Status not in (Completed, Cancelled).", tags: [] }
+              ]
+            },
+            {
+              title: 'Daily checklist (per collaborator)',
+              tasks: [
+                { id: 'p2_ops_daily_grid', text: "Add Activities grid filtered to Assigned To = Current user.", tags: [] },
+                { id: 'p2_ops_daily_filter', text: "Filter: Status in (To Do, Doing, In Review) AND Deadline <= TODAY() + 7 days.", tags: [] },
+                { id: 'p2_ops_daily_sort', text: "Sort by Deadline ascending.", tags: [] },
+                { id: 'p2_ops_daily_fields', text: "Fields: Activity Name, Project, Status, Deadline, Commit Notes. Enable inline edit for Status + Commit Notes.", tags: [] }
+              ]
+            },
+            {
+              title: 'Activities Kanban + Project summary',
+              tasks: [
+                { id: 'p2_ops_kanban', text: "Add Activities Kanban grouped by Status (To Do -> Doing -> In Review -> Done).", tags: [] },
+                { id: 'p2_ops_kanban_colors', text: "Colors: To Do=Gray, Doing=Blue, In Review=Yellow, Done=Green, Deadline ended=Red.", tags: [] },
+                { id: 'p2_ops_project_filter', text: "Add project dropdown filter to focus one project at a time.", tags: [] },
+                { id: 'p2_ops_projects_grid', text: "Add Projects grid: Project Name, Client, Project Status, Assigned To, Start/End, Activities count (rollup).", tags: [] },
+                { id: 'p2_ops_projects_coloring', text: "Conditional coloring: Confrontation=Blue, Execution=Orange, Completed=Green, Frozen=Red.", tags: [] }
+              ]
+            }
+          ]
+        },
+        {
+          id: 's2-3',
+          title: '2.3 - Finance and Monitoring Interface',
+          dependency: 'Requires Deals + Balance Due + Bad Debt Flag.',
+          groups: [
+            {
+              title: 'Deals overview + bad debt alert',
+              tasks: [
+                { id: 'p2_fin_create_interface', text: "VERIFY then create Interface 'Finance & Monitoring'.", tags: ['VERIFY'] },
+                { id: 'p2_fin_deals_grid', text: "Add Deals grid with: Deal Name, Client, Total Value, Amount Collected, Balance Due, Payment Status, Next Deadline, Bad Debt Flag.", tags: [] },
+                { id: 'p2_fin_deals_coloring', text: "Conditional coloring: Paid=Green, Down payment=Yellow, To be collected=Orange, Overdue=Red.", tags: [] },
+                { id: 'p2_fin_deals_sort', text: "Sort by Next Deadline ascending.", tags: [] },
+                { id: 'p2_fin_bad_debt_view', text: "Add filtered list/widget: Deals where Bad Debt Flag = Bad Debt.", tags: [] },
+                { id: 'p2_fin_bad_debt_sum', text: "Add number: sum of Balance Due for bad-debt Deals.", tags: [] },
+                { id: 'p2_fin_overdue_count', text: "Add number: count of Deals with Payment Status = Overdue.", tags: [] }
+              ]
+            },
+            {
+              title: 'Financial KPIs',
+              tasks: [
+                { id: 'p2_fin_chart_collected_vs_total', text: "Add chart: Amount Collected vs Total Value (bar).", tags: [] },
+                { id: 'p2_fin_total_revenue', text: "Add number: total revenue collected (sum Amount Collected).", tags: [] },
+                { id: 'p2_fin_pipeline_revenue', text: "Add number: pipeline revenue (sum Total Value where Payment Status != Paid).", tags: [] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'phase-3',
+      title: 'PHASE 3 - Connectivity and Integrations (External World)',
+      sections: [
+        {
+          id: 's3-1',
+          title: '3.1 - Ingestion Layer (Webhook -> Staging Area)',
+          dependency: 'Requires Staging Area + ingestion automation from Phase 1.',
+          groups: [
+            {
+              title: 'Website webhook (Elementor/Typeform)',
+              tasks: [
+                { id: 'p3_ing_website_scenario', text: "Create Make.com scenario 'Website Lead Ingestion'.", tags: ['VERIFY'] },
+                { id: 'p3_ing_website_webhook', text: "Make.com: create a Custom Webhook module and obtain the URL.", tags: [] },
+                { id: 'p3_ing_website_airtable_create', text: "Make.com: Airtable 'Create a record' in Staging Area (map Name, Email, Phone, Source=Website, Raw Data, optional Company Name).", tags: [] },
+                { id: 'p3_ing_website_connect', text: "Connect webhook URL to the website form.", tags: [] },
+                { id: 'p3_ing_website_test', text: "Test: submit a test form and verify record appears in Staging Area and is processed to Contacts.", tags: [] }
+              ]
+            },
+            {
+              title: 'Paid traffic webhook (Facebook/Google Ads)',
+              tasks: [
+                { id: 'p3_ing_paid_scenario', text: "Create Make.com scenario 'Paid Traffic Lead Ingestion'.", tags: ['VERIFY'] },
+                { id: 'p3_ing_paid_trigger', text: "Make.com: use Facebook Lead Ads or Google Ads Lead Form as trigger.", tags: [] },
+                { id: 'p3_ing_paid_airtable', text: "Make.com: create record in Staging Area (Source=Paid Traffic).", tags: [] },
+                { id: 'p3_ing_paid_test', text: "Test end-to-end until the Contact exists with correct initial statuses.", tags: [] }
+              ]
+            },
+            {
+              title: 'Outbound email (Smartlead/Lemlist)',
+              tasks: [
+                { id: 'p3_ing_outbound_scenario', text: "Create Make.com scenario 'Outbound Reply Ingestion'.", tags: ['VERIFY'] },
+                { id: 'p3_ing_outbound_trigger', text: "Make.com: trigger on Lead Replied (or Link Clicked).", tags: [] },
+                { id: 'p3_ing_outbound_airtable', text: "Make.com: create record in Staging Area (Source=Outbound Email).", tags: [] },
+                { id: 'p3_ing_outbound_test', text: "Test: verify resulting Contact.Action Status becomes 'To be contacted'.", tags: [] }
+              ]
+            },
+            {
+              title: 'Manual entry / Clay (Social or Referral)',
+              tasks: [
+                { id: 'p3_ing_manual_sop', text: "Document SOP for manual insertion into Staging Area for Social/Referral leads.", tags: [] },
+                { id: 'p3_ing_clay_optional', text: "Optional: integrate Clay -> Make.com -> Staging Area if volume justifies.", tags: ['DECISION'] }
+              ]
+            }
+          ]
+        },
+        {
+          id: 's3-2',
+          title: '3.2 - Calendly / Google Calendar Sync',
+          dependency: 'Requires Contacts calendly fields + Phase 1 automations active.',
+          groups: [
+            {
+              title: 'Calendly booking sync',
+              tasks: [
+                { id: 'p3_cal_booking_scenario', text: "Create Make.com scenario 'Calendly Booking Sync'.", tags: ['VERIFY'] },
+                { id: 'p3_cal_booking_trigger', text: "Calendly module: trigger 'New Event Created'.", tags: [] },
+                { id: 'p3_cal_booking_search', text: "Airtable: Search Contact by invitee Email.", tags: [] },
+                { id: 'p3_cal_booking_update', text: "Airtable: Update Contact -> Calendly Status=Booked; store Calendly Event ID.", tags: [] },
+                { id: 'p3_cal_booking_test', text: "Test: book a test event and verify Contact is updated.", tags: [] }
+              ]
+            },
+            {
+              title: 'Calendly call outcome (Call Done / No-show)',
+              tasks: [
+                { id: 'p3_cal_outcome_scenario', text: "Create Make.com scenario 'Calendly Call Outcome'.", tags: ['VERIFY'] },
+                { id: 'p3_cal_outcome_trigger', text: "Calendly: trigger 'Event Status Changed' (completed/cancelled).", tags: [] },
+                { id: 'p3_cal_outcome_router', text: "Add router with 2 paths.", tags: [] },
+                { id: 'p3_cal_outcome_done', text: "Path 1: update Contact -> Calendly Status = Call Done.", tags: [] },
+                { id: 'p3_cal_outcome_noshow', text: "Path 2: update Contact -> Calendly Status = No-Show.", tags: [] }
+              ]
+            },
+            {
+              title: 'Google Calendar sync (Activities)',
+              tasks: [
+                { id: 'p3_gcal_config', text: "Configure Airtable native Google Calendar Sync for Activities (Date fields with time).", tags: ['VERIFY'] },
+                { id: 'p3_gcal_verify', text: "Verify scheduled-event Activities (calls) appear in team Google Calendar.", tags: [] },
+                { id: 'p3_gcal_bidir_test', text: "Test bidirectionality: create an event in GCal and verify it appears in Activities (or vice versa).", tags: [] }
+              ]
+            }
+          ]
+        },
+        {
+          id: 's3-3',
+          title: '3.3 - External Notifications and SLA Violation Alerts',
+          dependency: 'Requires Gate timer formulas + automations operational.',
+          groups: [
+            {
+              title: 'Gate 1 SLA violation alert (72h)',
+              tasks: [
+                { id: 'p3_alert_gate1_create', text: "Create 'Gate 1 SLA Alert' (Airtable automation or Make.com).", tags: ['VERIFY'] },
+                { id: 'p3_alert_gate1_trigger', text: "Trigger: Clients.Gate 1 Timer = SLA VIOLATED.", tags: [] },
+                { id: 'p3_alert_gate1_email', text: "Action: email Lorenzo. Subject: WARNING: SLA Violation 72h: Client Analysis [Company Name] Stalled.", tags: [] },
+                { id: 'p3_alert_gate1_body', text: "Email body includes Company Name, Qualification Date, elapsed hours, link to Client record.", tags: [] },
+                { id: 'p3_alert_gate1_slack_optional', text: "Optional: Slack notification to #sales-alerts.", tags: ['DECISION'] }
+              ]
+            },
+            {
+              title: 'Gate 2 pre-call check (48h)',
+              tasks: [
+                { id: 'p3_alert_gate2_scenario', text: "Create Make.com scenario 'Gate 2 Pre-Call Check' (scheduled daily).", tags: ['VERIFY'] },
+                { id: 'p3_alert_gate2_search', text: "Find Clients with Proposal Discussion Date within next 48 hours.", tags: [] },
+                { id: 'p3_alert_gate2_condition', text: "Condition: Qualified Customer Status != Proposal sent.", tags: [] },
+                { id: 'p3_alert_gate2_email', text: "Action: email Giacomo + Draman. Subject: CRITICAL ALERT: Proposal Not Sent for Proposal Discussion Call - [Company Name].", tags: [] },
+                { id: 'p3_alert_gate2_body', text: "Email body includes scheduled call date and link to Client record.", tags: [] }
+              ]
+            },
+            {
+              title: 'Gate 3 dismissal notification (14d)',
+              tasks: [
+                { id: 'p3_alert_gate3_notify', text: "Send email/Slack notification when Gate 3 dismissal executes.", tags: ['VERIFY'] },
+                { id: 'p3_alert_gate3_subject', text: "Subject: DISMISSAL: Client [Company Name] moved to Ex-Client - Lack of decisions.", tags: [] },
+                { id: 'p3_alert_gate3_recipients', text: "Recipients: Lorenzo and commercial team.", tags: [] }
+              ]
+            },
+            {
+              title: 'Bad debt alert',
+              tasks: [
+                { id: 'p3_alert_bad_debt_create', text: "Create Airtable automation 'Bad Debt Alert'.", tags: ['VERIFY'] },
+                { id: 'p3_alert_bad_debt_trigger', text: "Trigger: Deals.Bad Debt Flag = Bad Debt.", tags: [] },
+                { id: 'p3_alert_bad_debt_email', text: "Action: email Lorenzo. Subject: BAD DEBT ALERT: [Deal Name] - Payment Overdue.", tags: [] },
+                { id: 'p3_alert_bad_debt_body', text: "Email body includes Deal Name, Balance Due, Next Deadline, Client name.", tags: [] }
+              ]
+            },
+            {
+              title: 'Operational notifications (Activities)',
+              tasks: [
+                { id: 'p3_alert_new_assignment', text: "Create automation 'New Assignment Notification' (on Activity created or Assigned To changes).", tags: ['VERIFY'] },
+                { id: 'p3_alert_new_assignment_email', text: "Email assigned collaborator with Activity details + Deadline.", tags: [] },
+                { id: 'p3_alert_deadline_ended', text: "Create automation 'Deadline Ended Alert' when Activity.Status becomes Deadline ended.", tags: ['VERIFY'] },
+                { id: 'p3_alert_deadline_ended_email', text: "Email assigned collaborator + Lorenzo about the SLA violation.", tags: [] },
+                { id: 'p3_alert_critical_comment', text: "Optional: alert on critical updates to Commit Notes (high-signal comments only).", tags: ['DECISION'] }
+              ]
+            },
+            {
+              title: 'Consulting hours alerts (6h cap)',
+              tasks: [
+                { id: 'p3_alert_consult_75', text: "Create automation 'Consulting Hours 75% Alert' when Total Consulting Hours >= 4.5.", tags: ['VERIFY'] },
+                { id: 'p3_alert_consult_75_email', text: "Email Lorenzo + Giacomo: 75% Consulting Hours reached for [Client].", tags: [] },
+                { id: 'p3_alert_consult_100', text: "Create automation 'Consulting Hours 100% Alert' when Total Consulting Hours >= 6.", tags: ['VERIFY'] },
+                { id: 'p3_alert_consult_100_email', text: "Email Lorenzo + Giacomo: 100% Consulting Hours exhausted - evaluate addendum.", tags: [] }
+              ]
+            },
+            {
+              title: 'Pilot activation notification + no-show recovery email',
+              tasks: [
+                { id: 'p3_notify_pilot_activation', text: "Add notification step to Pilot Activation automation (email Giacomo, Draman, Okai).", tags: ['VERIFY'] },
+                { id: 'p3_notify_pilot_activation_body', text: "Email includes Client, Project, Date Signed, first task deadline.", tags: [] },
+                { id: 'p3_noshow_recovery_scenario', text: "Create Make.com scenario 'No-Show Recovery Email' triggered by Contacts.Calendly Status = No-Show.", tags: ['VERIFY'] },
+                { id: 'p3_noshow_recovery_sequence', text: "Optional: 2-3 email sequence at 24h/48h/72h with Calendly link.", tags: ['DECISION'] }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+  function setStatus(t) { statusEl.textContent = t; }
+
+  function el(tag, attrs = {}, children = []) {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === 'class') node.className = v;
+      else if (k === 'text') node.textContent = v;
+      else if (k === 'html') node.innerHTML = v;
+      else if (k.startsWith('data-')) node.setAttribute(k, v);
+      else node.setAttribute(k, v);
+    }
+    for (const c of children) {
+      if (c == null) continue;
+      node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return node;
+  }
+
+  function render() {
+    phasesRoot.innerHTML = '';
+
+    for (const phase of PHASES) {
+      const phaseDetails = el('details', { class: 'block', id: phase.id, open: phase.id === 'phase-1' });
+      const phaseBadge = el('span', { class: 'badge', 'data-progress': phase.id, text: '0/0' });
+      const summary = el('summary', {}, [el('span', { text: phase.title }), phaseBadge]);
+      const body = el('div', { class: 'block-body' });
+
+      for (const section of phase.sections) {
+        const secDetails = el('details', { class: 'block', open: false });
+        const secBadge = el('span', { class: 'badge', 'data-progress': section.id, text: '0/0' });
+        const secSummary = el('summary', {}, [el('span', { text: section.title }), secBadge]);
+        const secBody = el('div', { class: 'block-body', 'data-section': section.id });
+
+        if (section.dependency) {
+          secBody.appendChild(el('p', { text: 'Dependency: ' + section.dependency }));
+        }
+
+        for (const group of section.groups) {
+          secBody.appendChild(el('div', { class: 'group-title', text: group.title }));
+          for (const t of group.tasks) {
+            const cb = el('input', { type: 'checkbox', 'data-id': t.id });
+            const text = el('div', { class: 'text', text: t.text });
+            const meta = el('div', { class: 'meta' });
+            for (const tag of (t.tags || [])) {
+              const cls = tag.toLowerCase() === 'fix' ? 'tag fix'
+                : tag.toLowerCase() === 'verify' ? 'tag verify'
+                : tag.toLowerCase() === 'decision' ? 'tag decision'
+                : 'tag';
+              meta.appendChild(el('span', { class: cls, text: tag }));
+            }
+
+            const row = el('div', { class: 'task' }, [cb, text, meta]);
+            if (t.note) row.appendChild(el('div', { class: 'task-note', text: t.note }));
+            if (t.code) row.appendChild(el('div', { class: 'task-code' }, [el('code', { text: t.code })]));
+
+            secBody.appendChild(row);
+          }
+        }
+
+        secDetails.appendChild(secSummary);
+        secDetails.appendChild(secBody);
+        body.appendChild(secDetails);
+      }
+
+      phaseDetails.appendChild(summary);
+      phaseDetails.appendChild(body);
+      phasesRoot.appendChild(phaseDetails);
+    }
+  }
+
+  function checkboxes() { return Array.from(document.querySelectorAll('input[data-id]')); }
+
+  function markDone() {
+    for (const cb of checkboxes()) {
+      cb.closest('.task')?.classList.toggle('done', cb.checked);
+    }
+  }
+
+  function updateBadges() {
+    document.querySelectorAll('[data-progress]').forEach(badge => {
+      const key = badge.dataset.progress;
+      const scope = key.startsWith('phase-')
+        ? document.getElementById(key)
+        : document.querySelector('[data-section="' + key + '"]');
+      if (!scope) return;
+      const all = scope.querySelectorAll('input[data-id]');
+      const done = Array.from(all).filter(c => c.checked).length;
+      badge.textContent = done + '/' + all.length;
+    });
+  }
+
+  function snapshot() {
+    const checked = {};
+    for (const cb of checkboxes()) {
+      if (cb.checked) checked[cb.dataset.id] = true;
+    }
+    memory.checked = checked;
+    memory.updatedAt = new Date().toISOString();
+  }
+
+  function apply(mem) {
+    const checked = (mem && mem.checked) || {};
+    for (const cb of checkboxes()) cb.checked = Boolean(checked[cb.dataset.id]);
+    markDone();
+    updateBadges();
+  }
+
+  function saveLocal() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(memory)); } catch (_) {}
+  }
+
+  function loadLocal() {
+    try {
+      const r = localStorage.getItem(STORAGE_KEY);
+      return r ? JSON.parse(r) : null;
+    } catch (_) { return null; }
+  }
+
+  async function loadServer() {
+    try {
+      const r = await fetch('/memory', { cache: 'no-store' });
+      if (!r.ok) throw 0;
+      serverMode = true;
+      setStatus('memory: /memory autosave');
+      return await r.json();
+    } catch (_) {
+      try {
+        const r2 = await fetch('./' + MEMORY_FILE, { cache: 'no-store' });
+        if (!r2.ok) throw 0;
+        setStatus('memory: local + static file loaded');
+        return await r2.json();
+      } catch (_) {
+        setStatus('memory: local only');
+        return null;
+      }
+    }
+  }
+
+  async function saveServer() {
+    if (!serverMode) return;
+    try {
+      await fetch('/memory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memory),
+      });
+      setStatus('memory: autosaved');
+    } catch (_) {
+      setStatus('memory: autosave failed');
+    }
+  }
+
+  function queueSave() {
+    snapshot();
+    saveLocal();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveServer, 400);
+  }
+
+  function currentFilter() { return filterEl.value; }
+
+  function applyVisibility() {
+    const f = currentFilter();
+    const q = (searchEl.value || '').trim().toLowerCase();
+
+    for (const row of document.querySelectorAll('.task')) {
+      const cb = row.querySelector('input[data-id]');
+      const text = (row.querySelector('.text')?.textContent || '').toLowerCase();
+      const note = (row.querySelector('.task-note')?.textContent || '').toLowerCase();
+      const tags = Array.from(row.querySelectorAll('.tag')).map(t => (t.textContent || '').toLowerCase());
+
+      const matchesSearch = !q || text.includes(q) || note.includes(q);
+      const isDone = cb ? cb.checked : false;
+
+      let matchesFilter = true;
+      if (f === 'remaining') matchesFilter = !isDone;
+      else if (f === 'done') matchesFilter = isDone;
+      else if (f.startsWith('tag:')) {
+        const wanted = f.slice('tag:'.length);
+        matchesFilter = tags.includes(wanted);
+      }
+
+      row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+    }
+  }
+
+  // Controls
+  document.getElementById('expand-all').addEventListener('click', () => {
+    document.querySelectorAll('details').forEach(d => d.open = true);
+  });
+  document.getElementById('collapse-all').addEventListener('click', () => {
+    document.querySelectorAll('details').forEach(d => d.open = false);
+  });
+  document.getElementById('export-btn').addEventListener('click', () => {
+    snapshot();
+    const blob = new Blob([JSON.stringify(memory, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = MEMORY_FILE;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  document.getElementById('import-btn').addEventListener('click', () => {
+    document.getElementById('import-input').click();
+  });
+  document.getElementById('import-input').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const mem = JSON.parse(reader.result);
+        memory = { version: 3, updatedAt: mem.updatedAt || null, checked: mem.checked || {} };
+        apply(memory);
+        saveLocal();
+        queueSave();
+        setStatus('memory: imported');
+        applyVisibility();
+      } catch (_) { setStatus('memory: import failed'); }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+  });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (!confirm('Reset all checkboxes? This cannot be undone.')) return;
+    for (const cb of checkboxes()) cb.checked = false;
+    queueSave();
+    markDone();
+    updateBadges();
+    applyVisibility();
+    setStatus('memory: reset');
+  });
+
+  filterEl.addEventListener('change', applyVisibility);
+  searchEl.addEventListener('input', applyVisibility);
+
+  // Checkbox handlers
+  document.addEventListener('change', e => {
+    if (!e.target.matches('input[data-id]')) return;
+    e.target.closest('.task')?.classList.toggle('done', e.target.checked);
+    updateBadges();
+    queueSave();
+    applyVisibility();
+  });
+
+  // Init
+  render();
+
+  (async () => {
+    const local = loadLocal();
+    if (local && local.checked) {
+      memory = { version: 3, updatedAt: local.updatedAt || null, checked: local.checked || {} };
+      apply(memory);
+    } else {
+      markDone();
+      updateBadges();
+    }
+
+    const remote = await loadServer();
+    if (remote && remote.checked) {
+      memory = { version: 3, updatedAt: remote.updatedAt || null, checked: remote.checked || {} };
+      apply(memory);
+      saveLocal();
+    }
+
+    applyVisibility();
+  })();
+})();
+</script>
+</body>
+</html>

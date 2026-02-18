@@ -16,7 +16,7 @@ create table if not exists public.sg_todo_memory (
 insert into public.sg_todo_memory (id, data)
 values (
   'global',
-  '{"version":1,"source":"SG_ToDo_List_Operativa.bilingual.html","updatedAt":null,"checked":{}}'
+  '{"version":3,"source":"ToDo.html","updatedAt":null,"checked":{}}'
 )
 on conflict (id) do nothing;
 ```
@@ -32,7 +32,7 @@ Set these in Vercel Project Settings -> Environment Variables:
 
 - Deploy this folder (`vercel_supabase_deploy`) as project root.
 - `vercel.json` handles:
-  - `/` -> `SG_ToDo_List_Operativa.bilingual.html`
+  - `/` -> `ToDo.html`
   - `/memory` -> `/api/memory`
 
 ## 4) Smoke test
