@@ -306,13 +306,12 @@
       </ul>
       <div class="group-title">Gaps / mismatches detected</div>
       <ul>
-        <li><code>Contacts.Deals</code> exists as a text field, but must be a Link to <code>Deals</code>.</li>
-        <li><code>Deals.Next Deadlline</code> is misspelled (should be <code>Next Deadline</code>).</li>
-        <li><code>Deals.Deal Name</code> formula currently concatenates Client + Project; should use Client + Deal Type.</li>
-        <li>Missing: <code>Deals.Bad Debt Flag</code> formula.</li>
-        <li>Missing: <code>Clients</code> governance dates + Gate timer formulas.</li>
-        <li>Missing: <code>Activities.Deadline Check</code> formula and a Duration field for consulting-hours monitoring.</li>
-        <li>Missing: Staging view filtered to <code>Processing Status = New</code> (required for the ingestion automation trigger).</li>
+        <li><code>Contacts.Deals</code> now exists as a Link to <code>Deals</code>. Legacy field <code>Contacts.DELETE - Deals (text)</code> should be deleted after any manual migration.</li>
+        <li><code>Deals.Deal Name</code> formula needs manual update: Client + Deal Type (not Client + Project).</li>
+        <li>Missing (manual): <code>Deals.Bad Debt Flag</code> formula. A placeholder field is marked <code>Deals.DELETE - Bad Debt Flag (placeholder)</code>.</li>
+        <li>Missing (manual): <code>Clients</code> Gate timer formulas (<code>Gate 1 Timer (72h)</code>, <code>Gate 3 Timer (14d)</code>).</li>
+        <li>Missing (manual): <code>Activities.Deadline Check</code> and <code>Call Duration (hours)</code> formulas + rollups for consulting-hours monitoring.</li>
+        <li>Missing (manual): Staging view filtered to <code>Processing Status = New</code> (required for the ingestion automation trigger).</li>
       </ul>
     </div>
   </details>
