@@ -1,5 +1,0 @@
-{
-    "rewrites": [
-      { "source": "/", "destination": "/SG_ToDo_List_Operativa.bilingual.html" }
-    ]
-}
